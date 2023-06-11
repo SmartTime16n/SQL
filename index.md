@@ -25,4 +25,13 @@ state VARCHAR(45),
 country VARCHAR(45),  
 condition VARCHAR(45)  
 )  
-Con esto creamos nuestra tabla y estamos listos para poner la informacion del csv en el :
+Con esto creamos nuestra tabla y estamos listos para poner la informacion del csv en el :  
+
+<img src="select_usa_cars.png" width="400" height="300" alt="Texto alternativo">
+
+Muy bien ahora podemos proceder a usar COPY para poner los datos del csv, es importante conocer la ruta de nuestro documento y que sea un documento publico en la pc, es decir que tenga permisos de lectura y escritura para poder ponder los datos en nuestra tabla, una vez que veamos la ruta y los permisios en propiedades en security, podemos aplicar nuestra query:  
+COPY usa_cars (price, brand, model, year, title_status, mileage, color, vin, lot, state, country, condition)  
+FROM 'C:\Users\Public\Documents\csv\USA_cars_datasets.csv'  
+DELIMITER ','  
+CSV HEADER;  
+
