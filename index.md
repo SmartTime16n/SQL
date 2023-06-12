@@ -36,8 +36,7 @@ DELIMITER ','
 CSV HEADER;  
 <img src="select_usa_copy.png" width="400" height="300" alt="Texto alternativo">
 
-Muy bien ya tenemos los datos dentro de postgres, ahora podemos hacer consultas exploartorias de nuestros datos, usaremos MAX(), MIN(), AVG(), DISTINCT(),
-ORDER BY, GROUP BY y LIMIT. Primero quiero saber que marcas de carro tenemos en el dataset, lo consultare usando DISTINCT: SELECT  DISTINCT(brand) FROM usa_cars;  
+Muy bien ya tenemos los datos dentro de postgres, ahora podemos hacer consultas exploartorias de nuestros datos, podemos usar MAX(), MIN(), AVG(), DISTINCT(),ORDER BY, GROUP BY y LIMIT. Primero quiero saber que marcas de carro tenemos en el dataset, lo consultare usando DISTINCT: SELECT  DISTINCT(brand) FROM usa_cars;  
 "chevrolet"  
 "mazda"  
 "audi"  
@@ -49,3 +48,76 @@ ORDER BY, GROUP BY y LIMIT. Primero quiero saber que marcas de carro tenemos en 
 "bmw"  
 Muy bien ahora sabemos cuales son las marcas de carro que tiene el dataset, muy bien quiero saber cuales son los 5 carros mas caros que tenemos en el dataset, de que marca son , cual es el modelo, cual es el precio, su color, su kilometrage y su condicion, para esto usare el siguiente query:  
 SELECT brand, model, year, title_status, milage, color, price from usa_cars order by price desc limit 5  
+"mercedes-benz"	"sl-class"	2017	"clean vehicle"	25302	"silver"	  84900    
+"ford"	         "drw"      2019	"clean vehicle"	10536	"no_color"	74000  
+"ford"	         "drw"     2019	"clean vehicle"	  9643	"no_color"  70000  
+"dodge"	     "challenger"  2019	"clean vehicle"	 10944	"blue"	    67000  
+"ford"	         "srw"	   2019	"clean vehicle"	 6500	  "black"	    65500  
+
+Muy bien ya tengo la informacion que necesitaba, ahora se que el carro mas caro del lote es un mercedes por $84900, tambien se que el segundo carro mas caro tiene menos kilometrage que el primero, esa informacion es muy valiosa a la hora de ofrecer carros, supongamos que el data set es nuestro lote personal de carros y nosotros los queremos vender, muy bien para eso vamos a crear las tablas para comenzar nuestra actividad de venta de carros:  
+CREATE TABLE clientes (  
+   rfc VARCHAR(45) PRIMARY KEY,  
+   nombre VARCHAR(45),  
+   apellido VARCHAR(45),  
+   e_mail VARCHAR(45),  
+   telefono VARCHAR(45)  
+);  
+CREATE TABLE vendedor (  
+   id SERIAL PRIMARY KEY,    
+   nombre VARCHAR(45),    
+   apellido VARCHAR(45),    
+   e_mail VARCHAR(45),    
+   telefono VARCHAR(45)    
+);    
+
+CREATE TABLE ventas (  
+   id SERIAL PRIMARY KEY,  
+   rfc_cliente VARCHAR(45) REFERENCES clientes(rfc),  
+   id_usa_cars INTEGER REFERENCES usa_cars(id),  
+   id_vendedor INTEGER REFERENCES vendedor(id),  
+   fecha DATE,  
+   FOREIGN KEY (rfc_cliente) REFERENCES clientes(rfc),  
+   FOREIGN KEY (id_usa_cars) REFERENCES usa_cars(id),  
+   FOREIGN KEY (id_vendedor) REFERENCES vendedor(id)  
+);  
+
+Perfecto ya tenemos nuestras tablas, ahora necesitamos insertar datos en ellas para hacer nuestro ejercicio de el negocio de venta de carros
+INSERT INTO vendedor (nombre, apellido, e_mail, telefono)  
+VALUES ('Juan', 'Ramirez', 'juan@ventas.com', '1234567890'),  
+       ('Ximena', 'Gómez', 'ximena@ventas.com', '9876543210'),  
+       ('Saul', 'Goodman', 'saul@ventas.com', '5555555555');  
+INSERT INTO clientes (rfc, nombre, apellido, e_mail, telefono)
+VALUES ('RFC1', 'Antonio', 'Gandara', 'antonio@cliente.com', '66214578456'),
+       ('RFC2', 'Rosio', 'Mesa', 'rosio@cliente.com', '662548742185'),
+       ('RFC3', 'Pedro', 'Balderrama', 'pedro@cliente.com', '6623555846');       
+INSERT INTO ventas (rfc_cliente, id_usa_cars, id_vendedor, fecha)  
+VALUES ('RFC1', 1, 1, '2023-06-10');  
+INSERT INTO ventas (rfc_cliente, id_usa_cars, id_vendedor, fecha)  
+VALUES ('RFC2', 2, 2, '2023-06-09');  
+INSERT INTO ventas (rfc_cliente, id_usa_cars, id_vendedor, fecha)  
+VALUES ('RFC3', 3, 3, '2023-06-08');  
+INSERT INTO ventas (rfc_cliente, id_usa_cars, id_vendedor, fecha)  
+VALUES ('RFC1', 4, 1, '2023-06-07');  
+INSERT INTO ventas (rfc_cliente, id_usa_cars, id_vendedor, fecha)  
+VALUES ('RFC2', 5, 1, '2023-06-06');   
+INSERT INTO ventas (rfc_cliente, id_usa_cars, id_vendedor, fecha)  
+VALUES ('RFC3', 6, 1, '2023-06-05');  
+INSERT INTO ventas (rfc_cliente, id_usa_cars, id_vendedor, fecha)  
+VALUES ('RFC1', 7, 1, '2023-06-04');  
+
+
+
+muy bien ahora tenemos informacion en nuestras nuevas tablas, los datos que inserte en la tabla ventas hacen referencia a la tabla vendedor, clientes y a la tabla usa_cars que es nuestro lote de carros, los primeros datos nos indican que Juan Ramirez vendio el carro con id 1 de nuestro lote el 10 de junio, esto lo sabemos gracias a las foreing keys, para poder ver quien vendio el carro y cual fue el carro que se vendio y por cuanto, vamos a necesitar usar JOINS para poder ver esa informacion.  
+SELECT   
+    a.fecha,  
+    b.nombre AS nombre_cliente,  
+    b.e_mail AS email_cliente,  
+    b.telefono AS telefono_cliente,  
+    c.nombre AS nombre_vendedor,  
+    u.brand,  
+    u.model,  
+    u.price  
+FROM ventas AS a  
+JOIN clientes AS b ON a.rfc_cliente = b.rfc  
+JOIN vendedor AS c ON a.id_vendedor = c.id  
+JOIN usa_cars AS u ON a.id_usa_cars = u.id;  
