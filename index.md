@@ -121,3 +121,26 @@ FROM ventas AS a
 JOIN clientes AS b ON a.rfc_cliente = b.rfc  
 JOIN vendedor AS c ON a.id_vendedor = c.id  
 JOIN usa_cars AS u ON a.id_usa_cars = u.id;  
+<img src="join_usa_cars.png" width="400" height="300" alt="Texto alternativo">
+Los joins son una herramienta clave en las bases de datos relacionales, nor permiten hacer uso de las primary keys y las forign keys para poder hacer una 
+sola tabla compuesta da datos de diferentes tablas que esten relacionadas por las keys, y de esta manera poder hacer consultas interesantes, ahora para hacer una consulta fija tenemos las vistas VIEW estas nos permiten hacer una tabla compuesta de otras que podemos llamar con un SELECT * FROM VIEW y tenemos toda esa informacion sin necesidad de escribir una query con JOINS cada vez que queramos consultar estos datos, para crear una vista usare la siguiente query:  
+CREATE VIEW vista_ventas AS  
+SELECT   
+    a.fecha,  
+    b.nombre AS nombre_cliente,  
+    b.e_mail AS email_cliente,  
+    b.telefono AS telefono_cliente,  
+    c.nombre AS nombre_vendedor,  
+    u.brand,  
+    u.model,  
+    u.price  
+FROM ventas AS a  
+JOIN clientes AS b ON a.rfc_cliente = b.rfc  
+JOIN vendedor AS c ON a.id_vendedor = c.id  
+JOIN usa_cars AS u ON a.id_usa_cars = u.id;  
+Ahora ya podemos consultar estos datos de manera sencilla con un simple SELECT * FROM vista_ventas y teneer toda la informacion con mas relevancia para nosotros sobre las ventas, gracias a esto rapidamente se que mi mejor vendedor es Juan, que carros vendio y a que clientes, y a partir de estos datos tomar decisiones basadas en ellos.
+
+## Conclusion
+SQL es un lenguaje muy poderoso usado de manera correcta, nos puede ahorrar mucho tiempo para hacer consultas especificas en sets de datos grandes, relacionar tablas por medio de JOINS y generar vistas para tener un acceso rapido a la informacion mas importante.
+
+
